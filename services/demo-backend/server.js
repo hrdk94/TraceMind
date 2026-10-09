@@ -4,6 +4,7 @@ import pino from "pino";
 import fs from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
+import { performance } from "node:perf_hooks";
 
 const app = express();
 const PORT = 3000;
@@ -21,37 +22,52 @@ const destination = pino.destination({
 });
 
 const logger = pino(
-  { level: "info", base: { service: "order-api" } },
+  {
+    level: "info",
+    base: {
+      service: "order-api",
+    },
+  },
   destination
 );
 
+// Attach a trace ID to every request.
 app.use((req, res, next) => {
   req.traceId = req.get("x-trace-id") || randomUUID();
   res.setHeader("x-trace-id", req.traceId);
   next();
 });
 
+// Health check endpoint.
 app.get("/", (req, res) => {
-  res.json({ message: "TraceMind demo backend is running" });
+  res.json({
+    message: "TraceMind demo backend is running",
+  });
 });
 
+// Orders endpoint with simulated database failures and latency.
 app.get("/orders", (req, res) => {
-  const started = Date.now();
+  const started = performance.now();
   const fail = req.query.fail;
 
   const logRequest = (statusCode, event, extra = {}) => {
+    const latencyMs = Number(
+      (performance.now() - started).toFixed(3)
+    );
+
     logger.info({
       timestamp: new Date().toISOString(),
       traceId: req.traceId,
       method: req.method,
       route: req.path,
       statusCode,
-      latencyMs: Date.now() - started,
+      latencyMs,
       event,
       ...extra,
     });
   };
 
+  // Simulate a database connection failure.
   if (fail === "db") {
     logRequest(500, "dependency_failure", {
       dependency: "postgres",
@@ -65,6 +81,7 @@ app.get("/orders", (req, res) => {
     });
   }
 
+  // Simulate a slow database response.
   if (fail === "slow-db") {
     return setTimeout(() => {
       logRequest(200, "slow_dependency", {
@@ -79,9 +96,10 @@ app.get("/orders", (req, res) => {
     }, 1200);
   }
 
+  // Normal request.
   logRequest(200, "request_completed");
 
-  res.json({
+  return res.json({
     message: "Orders fetched successfully",
     orders: [101, 102, 103],
     traceId: req.traceId,

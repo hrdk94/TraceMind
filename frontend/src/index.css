@@ -1,0 +1,50 @@
+
+.ai-narrative h1,
+.ai-narrative h2,
+.ai-narrative h3 {
+  color: #e3e6f0;
+  font-family: "Space Grotesk", sans-serif;
+  margin: 24px 0 10px;
+}
+
+.ai-narrative h1 {
+  font-size: 17px;
+}
+
+.ai-narrative h2 {
+  font-size: 15px;
+}
+
+.ai-narrative h3 {
+  font-size: 13px;
+}
+
+.ai-narrative strong {
+  color: #e4e7f1;
+  font-weight: 600;
+}
+
+.ai-narrative ul,
+.ai-narrative ol {
+  padding-left: 23px;
+  margin: 10px 0 18px;
+  color: #b8c1d2;
+}
+
+.ai-narrative li {
+  padding: 5px 0;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.ai-narrative li::marker {
+  color: #9b8cff;
+}
+
+.ai-narrative code {
+  color: #c0b6ff;
+  background: #242039;
+  border-radius: 4px;
+  padding: 2px 5px;
+  font-size: 11px;
+}
