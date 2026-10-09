@@ -66,17 +66,17 @@ app.get("/orders", (req, res) => {
   }
 
   if (fail === "slow-db") {
-    logRequest(200, "slow_dependency", {
-      dependency: "postgres",
-      latencyMs: 1200,
-      message: "Database response exceeded latency threshold",
-    });
+    return setTimeout(() => {
+      logRequest(200, "slow_dependency", {
+        dependency: "postgres",
+        message: "Database response exceeded latency threshold",
+      });
 
-    return res.json({
-      message: "Simulated slow database response",
-      simulatedLatencyMs: 1200,
-      traceId: req.traceId,
-    });
+      res.json({
+        message: "Simulated slow database response",
+        traceId: req.traceId,
+      });
+    }, 1200);
   }
 
   logRequest(200, "request_completed");
