@@ -1,0 +1,12 @@
+{
+  "name": "tracemind-demo-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "pino": "^10.4.0"
+  }
+}
